@@ -1,0 +1,19 @@
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_USER: demo
+      POSTGRES_DB: demo
+      # Disposable local-only database. TCP is disabled and no port is published.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    command: ["postgres", "-c", "listen_addresses="]
+    network_mode: none
+    tmpfs:
+      - /var/lib/postgresql/data
+    volumes:
+      - ./sql:/demo/sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U demo -d demo"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
